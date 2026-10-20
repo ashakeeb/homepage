@@ -4,112 +4,217 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Submit a Quote - FixBH</title>
+    <title>Submit a Quote - FixBah</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
+    <link
+        href="{{ url_for('static', filename='css/style.css') }}"
+        rel="stylesheet"
+    >
 </head>
 
-<body class="bg-light">
+<body class="quote-page">
 
-<nav class="navbar navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">FixBH</a>
+    <!-- Navigation -->
+    <nav class="navbar quote-navbar">
+        <div class="container">
+            <a class="navbar-brand quote-brand" href="/">
+                Fix<span>Bah</span>
+            </a>
 
-        <a href="{{ url_for('logout') }}" class="btn btn-light btn-sm">
-            Logout
-        </a>
-    </div>
-</nav>
-
-<div class="container mt-5 mb-5">
-
-    <div class="card shadow-sm mx-auto" style="max-width: 700px;">
-        <div class="card-body p-4">
-
-            <h2 class="mb-4">Submit a Quote</h2>
-
-            <h5>Service Request Details</h5>
-
-            <p>
-                <strong>Service:</strong>
-                {{ service_request.category_name }}
-            </p>
-
-            <p>
-                <strong>Customer's Description:</strong><br>
-                {{ service_request.description }}
-            </p>
-
-            <p>
-                <strong>Location:</strong>
-                {{ service_request.location }}
-            </p>
-
-            {% if error %}
-                <div class="alert alert-danger">
-                    {{ error }}
-                </div>
-            {% endif %}
-
-            <hr>
-
-            <form method="POST">
-
-                <div class="mb-3">
-                    <label for="price" class="form-label">
-                        Your Price (BHD)
-                    </label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        id="price"
-                        name="price"
-                        min="0"
-                        step="0.001"
-                        required
-                    >
-
-                    <div class="form-text">
-                        Enter your price in Bahraini dinars.
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">
-                        Quote Details
-                    </label>
-
-                    <textarea
-                        class="form-control"
-                        id="description"
-                        name="description"
-                        rows="4"
-                        maxlength="1000"
-                        placeholder="Explain what your price includes..."
-                    ></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    Submit Quote
-                </button>
-
+            <div class="d-flex gap-2">
                 <a
-                    href="{{ url_for('provider_requests') }}"
-                    class="btn btn-secondary"
+                    href="{{ url_for('provider_dashboard') }}"
+                    class="btn btn-outline-light btn-sm"
                 >
-                    Cancel
+                    Dashboard
                 </a>
 
-            </form>
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="btn btn-light btn-sm"
+                >
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="quote-header">
+        <div class="container">
+            <p class="dashboard-label">PROVIDER WORKSPACE</p>
+
+            <h1>Submit Your Quote</h1>
+
+            <p>
+                Provide a clear price and explain your service.
+                Help the customer understand exactly what you offer.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container quote-content">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-9 col-xl-8">
+
+                <!-- Service Request Details -->
+                <section class="quote-section">
+
+                    <div class="quote-section-heading">
+                        <div>
+                            <span class="quote-step">STEP 1</span>
+                            <h2>Service Request Details</h2>
+                            <p>Review the customer's requirements.</p>
+                        </div>
+                    </div>
+
+                    <div class="request-summary">
+
+                        <div class="request-service">
+                            <span class="request-label">SERVICE CATEGORY</span>
+
+                            <h3>
+                                {{ service_request.category_name }}
+                            </h3>
+                        </div>
+
+                        <div class="request-detail">
+                            <span class="request-label">
+                                CUSTOMER'S DESCRIPTION
+                            </span>
+
+                            <p>{{ service_request.description }}</p>
+                        </div>
+
+                        <div class="request-detail">
+                            <span class="request-label">LOCATION</span>
+
+                            <p>{{ service_request.location }}</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- Quote Form -->
+                <section class="quote-section quote-form-section">
+
+                    <div class="quote-section-heading">
+                        <div>
+                            <span class="quote-step">STEP 2</span>
+                            <h2>Your Offer</h2>
+                            <p>Enter your price and explain what's included.</p>
+                        </div>
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST">
+
+                        <div class="mb-4">
+                            <label for="price" class="form-label">
+                                Your Price (BHD)
+                            </label>
+
+                            <div class="price-input-wrapper">
+                                <span class="price-currency">BHD</span>
+
+                                <input
+                                    type="number"
+                                    class="form-control price-input"
+                                    id="price"
+                                    name="price"
+                                    min="0.001"
+                                    step="0.001"
+                                    placeholder="0.000"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-text">
+                                Enter your total price in Bahraini dinars.
+                                You can use three decimal places.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">
+                                Quote Details
+                                <span class="optional-label">(Optional)</span>
+                            </label>
+
+                            <textarea
+                                class="form-control quote-textarea"
+                                id="description"
+                                name="description"
+                                rows="5"
+                                maxlength="1000"
+                                placeholder="Explain the work you will perform, materials included, estimated completion time, and any other important details..."
+                            ></textarea>
+
+                            <div class="form-text">
+                                Clear details help customers compare offers
+                                and understand your service.
+                            </div>
+                        </div>
+
+                        <div class="quote-notice">
+                            <strong>Before submitting</strong>
+                            <p>
+                                Check your price and quote details carefully.
+                                Make sure your offer accurately describes
+                                the service you can provide.
+                            </p>
+                        </div>
+
+                        <div class="quote-form-actions">
+
+                            <a
+                                href="{{ url_for('provider_requests') }}"
+                                class="btn btn-quote-cancel"
+                            >
+                                Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary-brand"
+                            >
+                                Submit Quote
+                                <span aria-hidden="true">&rarr;</span>
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+            </div>
 
         </div>
-    </div>
 
-</div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container text-center">
+            <strong>FixBah</strong>
+            <p>Your Home. Our Responsibility.</p>
+        </div>
+    </footer>
 
 </body>
 </html>

@@ -71,26 +71,26 @@
                                 <!-- Provider information -->
                                 <p class="mb-2">
                                     <strong>Provider Information:</strong><br>
-                                    {{ quote.provider_description or "No additional information provided." }}
+                                    {{ quote.business_description or "No additional information provided." }}
                                 </p>
 
                                 <!-- Quote details -->
                                 <p class="mb-2">
                                     <strong>Quote Details:</strong><br>
-                                    {{ quote.description or "No additional details provided." }}
+                                    {{ quote.quote_description or "No additional details provided." }}
                                 </p>
 
                                 <!-- Quote status -->
                                 <p class="mb-3">
                                     <strong>Quote Status:</strong>
 
-                                    {% if quote.status == 'accepted' %}
+                                    {% if quote.quote_status == 'accepted' %}
 
                                         <span class="badge bg-success">
                                             Accepted
                                         </span>
 
-                                    {% elif quote.status == 'rejected' %}
+                                    {% elif quote.quote_status == 'rejected' %}
 
                                         <span class="badge bg-secondary">
                                             Not Selected

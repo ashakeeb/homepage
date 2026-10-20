@@ -201,98 +201,119 @@ def provider_appointments():
 @app.route("/update-booking/<int:booking_id>/<action>", methods=["POST"])
 def update_booking(booking_id, action):
 
+    # Only logged-in providers can update appointments.
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     if session.get("role") != "provider":
         return redirect(url_for("dashboard"))
 
-    if action not in ("confirm", "reject"):
+    # Allow only these actions.
+    if action not in ("confirm", "reject", "complete"):
         return "Invalid action.", 400
 
     db = get_db_connection()
 
-    # Check that the appointment belongs to this provider.
-    booking = db.execute("""
-        SELECT
-            bookings.id,
-            bookings.status
-        FROM bookings
+    try:
+        # Check that this appointment belongs to this provider.
+        booking = db.execute("""
+            SELECT
+                bookings.id,
+                bookings.status,
+                quotes.id AS quote_id,
+                quotes.request_id
+            FROM bookings
 
-        JOIN quotes
-            ON bookings.quote_id = quotes.id
+            JOIN quotes
+                ON bookings.quote_id = quotes.id
 
-        JOIN providers
-            ON quotes.provider_id = providers.id
+            JOIN providers
+                ON quotes.provider_id = providers.id
 
-        WHERE bookings.id = ?
-          AND providers.user_id = ?
-    """, (booking_id, session["user_id"])).fetchone()
+            WHERE bookings.id = ?
+              AND providers.user_id = ?
+        """, (booking_id, session["user_id"])).fetchone()
 
-    if booking is None:
+        if booking is None:
+            return "Appointment not found or access denied.", 404
+
+        current_status = booking["status"]
+
+        # Confirm a pending appointment.
+        if action == "confirm":
+
+            if current_status != "pending":
+                return "Only pending appointments can be confirmed.", 400
+
+            db.execute("""
+                UPDATE bookings
+                SET status = 'confirmed'
+                WHERE id = ?
+                  AND status = 'pending'
+            """, (booking_id,))
+
+            db.execute("""
+                UPDATE service_requests
+                SET status = 'confirmed'
+                WHERE id = ?
+            """, (booking["request_id"],))
+
+        # Reject a pending appointment.
+        elif action == "reject":
+
+            if current_status != "pending":
+                return "Only pending appointments can be rejected.", 400
+
+            db.execute("""
+                UPDATE bookings
+                SET status = 'rejected'
+                WHERE id = ?
+                  AND status = 'pending'
+            """, (booking_id,))
+
+            # Reset the selected quote so it is no longer accepted.
+            db.execute("""
+                UPDATE quotes
+                SET status = 'rejected'
+                WHERE id = ?
+            """, (booking["quote_id"],))
+
+            # Reopen the request so the customer can choose another quote.
+            db.execute("""
+                UPDATE service_requests
+                SET status = 'pending'
+                WHERE id = ?
+            """, (booking["request_id"],))
+
+        # Mark a confirmed appointment as completed.
+        elif action == "complete":
+
+            if current_status != "confirmed":
+                return "Only confirmed appointments can be completed.", 400
+
+            db.execute("""
+                UPDATE bookings
+                SET status = 'completed'
+                WHERE id = ?
+                  AND status = 'confirmed'
+            """, (booking_id,))
+
+            db.execute("""
+                UPDATE service_requests
+                SET status = 'completed'
+                WHERE id = ?
+            """, (booking["request_id"],))
+
+        db.commit()
+
+    except sqlite3.Error:
+        db.rollback()
+        return "Something went wrong while updating the appointment.", 500
+
+    finally:
         db.close()
-        return "Appointment not found or access denied.", 404
-
-    if booking["status"] != "pending":
-        db.close()
-        return "This appointment has already been processed.", 400
-
-    new_status = "confirmed" if action == "confirm" else "rejected"
-
-    db.execute("""
-        UPDATE bookings
-        SET status = ?
-        WHERE id = ?
-      AND status = 'pending'
-""", (new_status, booking_id))
-    
-    # Update the service request status.
-    if new_status == "confirmed":
-
-        db.execute("""
-        UPDATE service_requests
-        SET status = 'confirmed'
-        WHERE id = (
-            SELECT quotes.request_id
-            FROM quotes
-            JOIN bookings
-                ON bookings.quote_id = quotes.id
-            WHERE bookings.id = ?
-        )
-    """, (booking_id,))
-
-# Update the service request status when the provider responds.
-    if new_status == "confirmed":
-        db.execute("""
-        UPDATE service_requests
-        SET status = 'confirmed'
-        WHERE id = (
-            SELECT quotes.request_id
-            FROM quotes
-            JOIN bookings
-                ON bookings.quote_id = quotes.id
-            WHERE bookings.id = ?
-        )
-    """, (booking_id,))
-
-    elif new_status == "rejected":
-     db.execute("""
-        UPDATE service_requests
-        SET status = 'pending'
-        WHERE id = (
-            SELECT quotes.request_id
-            FROM quotes
-            JOIN bookings
-                ON bookings.quote_id = quotes.id
-            WHERE bookings.id = ?
-        )
-    """, (booking_id,))
-
-    db.commit()
-    db.close()
 
     return redirect(url_for("provider_appointments"))
-
     
 
 @app.route("/provider-profile", methods=["GET", "POST"])
@@ -740,11 +761,13 @@ def book_appointment(quote_id):
         db.close()
         return "Quote not found or access denied.", 404
 
-    # Do not allow booking a rejected quote.
-    if quote["status"] == "rejected":
+    # Only pending quotes can be booked.
+    if quote["status"] != "pending":
         db.close()
-        return "This quote was not selected and cannot be booked.", 400
 
+        return render_template(
+                "quote_error.html"), 400
+            
     error = None
 
     if request.method == "POST":
@@ -800,6 +823,13 @@ def book_appointment(quote_id):
                         SET status = 'accepted'
                         WHERE id = ?
                     """, (quote_id,))
+                    
+                    # Mark the service request as confirmed.
+                    db.execute("""
+                        UPDATE service_requests
+                        SET status = 'confirmed'
+                        WHERE id = ?
+                    """, (quote["request_id"],))
 
                     # Reject the other quotes for this request.
                     db.execute("""

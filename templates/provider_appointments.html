@@ -5,181 +5,312 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Manage Appointments - FixBH</title>
+    <title>Appointments | FixBah</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 
-<body class="bg-light">
+<body class="appointments-page">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar navbar-dark dashboard-navbar">
         <div class="container">
 
             <a class="navbar-brand fw-bold" href="/">
-                FixBH
+                Fix<span class="brand-highlight">Bah</span>
             </a>
 
-            <a href="{{ url_for('logout') }}"
-               class="btn btn-light btn-sm">
-                Logout
+            <a
+                href="{{ url_for('provider_dashboard') }}"
+                class="btn btn-outline-light btn-sm"
+            >
+                ← Dashboard
             </a>
 
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container mt-5 mb-5">
 
-        <h2>Manage Appointments</h2>
+    <!-- Page Header -->
+    <section class="appointments-header">
+        <div class="container">
 
-        <p class="text-muted">
-            View customer appointments and confirm or reject pending bookings.
-        </p>
+            <p class="dashboard-label">PROVIDER PORTAL</p>
 
-        <div class="mb-4">
-            <a href="{{ url_for('provider_dashboard') }}"
-               class="btn btn-secondary">
-                Back to Dashboard
-            </a>
+            <h1>Manage Appointments</h1>
+
+            <p>
+                Keep track of your bookings, coordinate with customers,
+                and manage your scheduled services.
+            </p>
+
         </div>
+    </section>
+
+
+    <!-- Main Content -->
+    <main class="container appointments-content">
+
+        <div class="appointments-section-heading">
+            <div>
+                <h2>Your Appointments</h2>
+
+                <p>
+                    Review booking details and update appointment statuses.
+                </p>
+            </div>
+
+            <span class="appointments-count">
+                {{ appointments|length }}
+                {% if appointments|length == 1 %}
+                    Appointment
+                {% else %}
+                    Appointments
+                {% endif %}
+            </span>
+        </div>
+
 
         {% if appointments %}
 
-            <div class="table-responsive">
+            <div class="row g-4">
 
-                <table class="table table-bordered table-striped bg-white align-middle">
+                {% for item in appointments %}
 
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Customer</th>
-                            <th>Service</th>
-                            <th>Location</th>
-                            <th>Price</th>
-                            <th>Appointment Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <div class="col-12 col-lg-6">
 
-                    <tbody>
+                        <article class="appointment-card">
 
-                        {% for item in appointments %}
+                            <!-- Card Header -->
+                            <div class="appointment-card-header">
 
-                            <tr>
+                                <div>
+                                    <span class="appointment-label">
+                                        CUSTOMER
+                                    </span>
 
-                                <td>
-                                    {{ item.customer_name }}
-                                </td>
+                                    <h3>
+                                        {{ item.customer_name }}
+                                    </h3>
+                                </div>
 
-                                <td>
-                                    {{ item.service_description }}
-                                </td>
-
-                                <td>
-                                    {{ item.location }}
-                                </td>
-
-                                <td>
-                                    BHD {{ "%.3f"|format(item.price) }}
-                                </td>
-
-                                <td>
-                                    {{ item.appointment_date }}
-                                </td>
-
-                                <td>
+                                <div>
 
                                     {% if item.booking_status == 'pending' %}
 
-                                        <span class="badge bg-warning text-dark">
+                                        <span class="appointment-status status-pending">
                                             Pending
                                         </span>
 
                                     {% elif item.booking_status == 'confirmed' %}
 
-                                        <span class="badge bg-success">
+                                        <span class="appointment-status status-confirmed">
                                             Confirmed
                                         </span>
 
                                     {% elif item.booking_status == 'rejected' %}
 
-                                        <span class="badge bg-danger">
+                                        <span class="appointment-status status-rejected">
                                             Rejected
+                                        </span>
+
+                                    {% elif item.booking_status == 'completed' %}
+
+                                        <span class="appointment-status status-completed">
+                                            Completed
                                         </span>
 
                                     {% else %}
 
-                                        <span class="badge bg-secondary">
+                                        <span class="appointment-status status-pending">
                                             {{ item.booking_status|capitalize }}
                                         </span>
 
                                     {% endif %}
 
-                                </td>
+                                </div>
 
-                                <td>
+                            </div>
 
-                                    {% if item.booking_status == 'pending' %}
 
-                                        <form
-                                            method="POST"
-                                            action="{{ url_for('update_booking', booking_id=item.booking_id, action='confirm') }}"
-                                            class="mb-2"
-                                        >
-                                            <button
-                                                type="submit"
-                                                class="btn btn-success btn-sm w-100"
-                                            >
-                                                Confirm
-                                            </button>
-                                        </form>
+                            <!-- Service -->
+                            <div class="appointment-service">
 
-                                        <form
-                                            method="POST"
-                                            action="{{ url_for('update_booking', booking_id=item.booking_id, action='reject') }}"
-                                            onsubmit="return confirm('Are you sure you want to reject this appointment?');"
-                                        >
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger btn-sm w-100"
-                                            >
-                                                Reject
-                                            </button>
-                                        </form>
+                                <span class="appointment-label">
+                                    SERVICE REQUEST
+                                </span>
 
-                                    {% else %}
+                                <p>{{ item.service_description }}</p>
 
-                                        <span class="text-muted">
-                                            No actions available
+                            </div>
+
+
+                            <!-- Appointment Details -->
+                            <div class="appointment-details">
+
+                                <div class="appointment-detail-item">
+
+                                    <span class="appointment-label">
+                                        LOCATION
+                                    </span>
+
+                                    <p>📍 {{ item.location }}</p>
+
+                                </div>
+
+                                <div class="appointment-detail-item">
+
+                                    <span class="appointment-label">
+                                        AGREED PRICE
+                                    </span>
+
+                                    <p class="appointment-price">
+                                        BHD {{ "%.3f"|format(item.price) }}
+                                    </p>
+
+                                </div>
+
+                                <div class="appointment-detail-item">
+
+                                    <span class="appointment-label">
+                                        APPOINTMENT DATE
+                                    </span>
+
+                                    <p>📅 {{ item.appointment_date }}</p>
+
+                                </div>
+
+                                {% if item.quote_description %}
+
+                                    <div class="appointment-detail-item appointment-quote">
+
+                                        <span class="appointment-label">
+                                            QUOTE DETAILS
                                         </span>
 
-                                    {% endif %}
+                                        <p>{{ item.quote_description }}</p>
 
-                                </td>
+                                    </div>
 
-                            </tr>
+                                {% endif %}
 
-                        {% endfor %}
+                            </div>
 
-                    </tbody>
 
-                </table>
+                            <!-- Actions -->
+                            <div class="appointment-actions">
+
+                                {% if item.booking_status == 'pending' %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('update_booking', booking_id=item.booking_id, action='confirm') }}"
+                                        onsubmit="return confirm('Confirm this appointment?');"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary-brand w-100"
+                                        >
+                                            Confirm Appointment
+                                        </button>
+                                    </form>
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('update_booking', booking_id=item.booking_id, action='reject') }}"
+                                        onsubmit="return confirm('Are you sure you want to reject this appointment?');"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-reject w-100"
+                                        >
+                                            Reject
+                                        </button>
+                                    </form>
+
+                                {% elif item.booking_status == 'confirmed' %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('update_booking', booking_id=item.booking_id, action='complete') }}"
+                                        onsubmit="return confirm('Mark this appointment as completed?');"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary-brand w-100"
+                                        >
+                                            Mark as Completed
+                                        </button>
+                                    </form>
+
+                                {% elif item.booking_status == 'completed' %}
+
+                                    <p class="appointment-completed-message">
+                                        ✓ This service has been completed.
+                                    </p>
+
+                                {% elif item.booking_status == 'rejected' %}
+
+                                    <p class="appointment-rejected-message">
+                                        This appointment was rejected.
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                {% endfor %}
 
             </div>
 
         {% else %}
 
-            <div class="alert alert-info">
-                You do not have any appointments yet.
+            <!-- Empty State -->
+            <div class="appointments-empty">
+
+                <div class="appointments-empty-icon">📅</div>
+
+                <h3>No Appointments Yet</h3>
+
+                <p>
+                    When customers book your services, their appointments
+                    will appear here.
+                </p>
+
+                <a
+                    href="{{ url_for('provider_dashboard') }}"
+                    class="btn btn-primary-brand mt-2"
+                >
+                    Back to Dashboard
+                </a>
+
             </div>
 
         {% endif %}
 
-    </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container text-center">
+            <p>
+                © 2026 FixBah. Your Home. Our Responsibility.
+            </p>
+        </div>
+    </footer>
 
 </body>
 </html>

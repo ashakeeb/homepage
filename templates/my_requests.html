@@ -5,216 +5,343 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>My Service Requests - FixBH</title>
+    <title>My Service Requests | FixBah</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 
-<body class="bg-light">
+<body class="my-requests-page">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar navbar-dark dashboard-navbar">
         <div class="container">
 
             <a class="navbar-brand fw-bold" href="/">
-                FixBH
+                Fix<span class="brand-highlight">Bah</span>
             </a>
 
-            <a href="{{ url_for('logout') }}"
-               class="btn btn-light btn-sm">
-                Logout
+            <a href="{{ url_for('dashboard') }}"
+               class="btn btn-outline-light btn-sm">
+                ← Dashboard
             </a>
 
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container mt-5 mb-5">
 
-        <h2>My Service Requests</h2>
+    <!-- Page Header -->
+    <section class="my-requests-header">
+        <div class="container">
 
-        <p class="text-muted">
-            View your service requests, provider quotes, and appointments.
-        </p>
+            <p class="dashboard-label">CUSTOMER PORTAL</p>
 
-        <!-- New Request Button -->
-        <div class="mb-4">
+            <h1>My Service Requests</h1>
+
+            <p>
+                Track your home service requests, compare provider quotes,
+                and manage your appointments in one place.
+            </p>
+
             <a href="{{ url_for('request_service') }}"
-               class="btn btn-primary">
+               class="btn btn-primary-brand mt-3">
                 + Request a Service
             </a>
+
         </div>
+    </section>
+
+
+    <!-- Main Content -->
+    <main class="container my-requests-content">
+
+        <div class="my-requests-section-heading">
+
+            <div>
+                <h2>Your Requests</h2>
+
+                <p>
+                    View the progress of your requests and appointment details.
+                </p>
+            </div>
+
+            <span class="requests-count">
+                {{ requests_list|length }}
+                {% if requests_list|length == 1 %}
+                    Request
+                {% else %}
+                    Requests
+                {% endif %}
+            </span>
+
+        </div>
+
 
         {% if requests_list %}
 
-            <div class="table-responsive">
+            <div class="row g-4">
 
-                <table class="table table-bordered table-striped bg-white align-middle">
+                {% for item in requests_list %}
 
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Service</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Request Status</th>
-                            <th>Date Created</th>
-                            <th>Appointment Details</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <div class="col-12 col-lg-6">
 
-                    <tbody>
+                        <article class="customer-request-card">
 
-                        {% for item in requests_list %}
+                            <!-- Card Header -->
+                            <div class="customer-request-header">
 
-                            <tr>
+                                <div>
+                                    <span class="request-label">
+                                        SERVICE CATEGORY
+                                    </span>
 
-                                <!-- Service -->
-                                <td>
-                                    {{ item.category_name }}
-                                </td>
+                                    <h3>{{ item.category_name }}</h3>
+                                </div>
 
-                                <!-- Description -->
-                                <td>
-                                    {{ item.description }}
-                                </td>
+                                <div>
 
-                                <!-- Location -->
-                                <td>
-                                    {{ item.location }}
-                                </td>
-
-                                <!-- Request Status -->
-                                <td>
                                     {% if item.status == 'pending' %}
-                                        <span class="badge bg-warning text-dark">
+
+                                        <span class="request-status request-pending">
                                             Pending
                                         </span>
 
                                     {% elif item.status == 'confirmed' %}
-                                        <span class="badge bg-success">
+
+                                        <span class="request-status request-confirmed">
                                             Confirmed
                                         </span>
 
                                     {% elif item.status == 'completed' %}
-                                        <span class="badge bg-primary">
+
+                                        <span class="request-status request-completed">
                                             Completed
                                         </span>
 
                                     {% else %}
 
-                                        <span class="badge bg-secondary">
+                                        <span class="request-status request-other">
                                             {{ item.status|capitalize }}
                                         </span>
 
                                     {% endif %}
-                                </td>
 
-                                <!-- Date Created -->
-                                <td>
-                                    {{ item.created_at }}
-                                </td>
+                                </div>
 
-                                <!-- Appointment Details -->
-                                <td>
+                            </div>
 
-                                    {% if item.appointment_date %}
 
-                                        <strong>Provider:</strong><br>
-                                        {{ item.business_name }}<br><br>
+                            <!-- Request Description -->
+                            <div class="customer-request-description">
 
-                                        <strong>Phone:</strong><br>
-                                        {{ item.phone or "Not available" }}<br><br>
+                                <span class="request-label">
+                                    PROBLEM DESCRIPTION
+                                </span>
 
-                                        <strong>Price:</strong><br>
-                                        BHD {{ "%.3f"|format(item.price) }}<br><br>
+                                <p>{{ item.description }}</p>
 
-                                        <strong>Appointment:</strong><br>
-                                        {{ item.appointment_date }}<br><br>
+                            </div>
 
-                                        <strong>Booking Status:</strong><br>
 
-                                        {% if item.booking_status == 'confirmed' %}
+                            <!-- Location -->
+                            <div class="customer-request-location">
 
-                                            <span class="badge bg-success">
+                                <span class="request-label">
+                                    SERVICE LOCATION
+                                </span>
+
+                                <p>📍 {{ item.location }}</p>
+
+                            </div>
+
+
+                            <!-- Request Date -->
+                            <div class="customer-request-date">
+                                <span class="request-label">
+                                    REQUESTED ON
+                                </span>
+
+                                <p>{{ item.created_at or "Not available" }}</p>
+                            </div>
+
+
+                            <!-- Appointment Information -->
+                            {% if item.appointment_date %}
+
+                                <div class="customer-booking-details">
+
+                                    <div class="booking-details-heading">
+                                        <span>✓</span>
+
+                                        <h4>Appointment Details</h4>
+                                    </div>
+
+                                    <div class="booking-info-grid">
+
+                                        <div>
+                                            <span class="request-label">
+                                                PROVIDER
+                                            </span>
+
+                                            <p>
+                                                {{ item.business_name or "Not available" }}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <span class="request-label">
+                                                PRICE
+                                            </span>
+
+                                            <p class="customer-booking-price">
+                                                BHD {{ "%.3f"|format(item.price or 0) }}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <span class="request-label">
+                                                APPOINTMENT
+                                            </span>
+
+                                            <p>{{ item.appointment_date }}</p>
+                                        </div>
+
+                                        <div>
+                                            <span class="request-label">
+                                                PROVIDER PHONE
+                                            </span>
+
+                                            <p>{{ item.phone or "Not available" }}</p>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="customer-booking-status">
+
+                                        <span class="request-label">
+                                            BOOKING STATUS
+                                        </span>
+
+                                        {% if item.booking_status == 'pending' %}
+
+                                            <span class="request-status request-pending">
+                                                Awaiting Provider Confirmation
+                                            </span>
+
+                                        {% elif item.booking_status == 'confirmed' %}
+
+                                            <span class="request-status request-confirmed">
                                                 Confirmed
                                             </span>
 
-                                        {% elif item.booking_status == 'pending' %}
+                                        {% elif item.booking_status == 'completed' %}
 
-                                            <span class="badge bg-warning text-dark">
-                                                Pending
+                                            <span class="request-status request-completed">
+                                                Completed
+                                            </span>
+
+                                        {% elif item.booking_status == 'rejected' %}
+
+                                            <span class="request-status request-rejected">
+                                                Rejected
                                             </span>
 
                                         {% elif item.booking_status == 'cancelled' %}
 
-                                            <span class="badge bg-danger">
+                                            <span class="request-status request-rejected">
                                                 Cancelled
                                             </span>
 
                                         {% else %}
 
-                                            <span class="badge bg-secondary">
+                                            <span class="request-status request-other">
                                                 {{ item.booking_status|capitalize }}
                                             </span>
 
                                         {% endif %}
 
-                                    {% else %}
+                                    </div>
 
-                                        <span class="text-muted">
-                                            No appointment booked yet.
-                                        </span>
+                                </div>
 
-                                    {% endif %}
+                            {% else %}
 
-                                </td>
+                                <div class="customer-no-booking">
+                                    <span>📅</span>
 
-                                <!-- Actions -->
-                                <td>
+                                    <p>
+                                        No appointment booked yet.
+                                        Review the available provider quotes below.
+                                    </p>
+                                </div>
 
-                                    <a
-                                        href="{{ url_for('my_quotes', request_id=item.id) }}"
-                                        class="btn btn-primary btn-sm"
-                                    >
-                                        View Quotes
-                                    </a>
+                            {% endif %}
 
-                                </td>
 
-                            </tr>
+                            <!-- Actions -->
+                            <div class="customer-request-actions">
 
-                        {% endfor %}
+                                <a
+                                    href="{{ url_for('my_quotes', request_id=item.id) }}"
+                                    class="btn btn-primary-brand w-100"
+                                >
+                                    View Provider Quotes →
+                                </a>
 
-                    </tbody>
+                            </div>
 
-                </table>
+                        </article>
+
+                    </div>
+
+                {% endfor %}
 
             </div>
 
         {% else %}
 
-            <div class="alert alert-info">
-                You have not submitted any service requests yet.
+            <!-- Empty State -->
+            <div class="customer-requests-empty">
+
+                <div class="customer-requests-empty-icon">🛠️</div>
+
+                <h3>No Service Requests Yet</h3>
+
+                <p>
+                    When you need help with a home service, create a request
+                    and let trusted providers send you their quotes.
+                </p>
+
+                <a
+                    href="{{ url_for('request_service') }}"
+                    class="btn btn-primary-brand mt-3"
+                >
+                    Request Your First Service
+                </a>
+
             </div>
-            
+
         {% endif %}
 
-        <!-- Back to Dashboard -->
-        <div class="mt-4">
+    </main>
 
-            <a href="{{ url_for('dashboard') }}"
-               class="btn btn-secondary">
-                Back to Dashboard
-            </a>
 
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container text-center">
+            <p>
+                © 2026 FixBah. Your Home. Our Responsibility.
+            </p>
         </div>
-
-    </div>
+    </footer>
 
 </body>
-
 </html>

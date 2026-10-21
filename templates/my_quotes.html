@@ -1,121 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Provider Quotes - FixBH</title>
+    <title>Provider Quotes | FixBah</title>
 
+    <!-- Bootstrap CSS -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
+    <!-- FixBah CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 
-<body class="bg-light">
+<body class="quotes-page">
 
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-dark bg-primary">
+    <!-- Navigation Bar -->
+    <nav class="navbar quotes-navbar">
         <div class="container">
 
-            <a class="navbar-brand fw-bold" href="/">
-                FixBH
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+                FixBah
             </a>
 
-            <a href="{{ url_for('logout') }}"
-               class="btn btn-light btn-sm">
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-light">
                 Logout
             </a>
 
         </div>
     </nav>
 
-    <!-- Main content -->
-    <div class="container mt-5 mb-5">
 
-        <h2>Provider Quotes</h2>
+    <!-- Page Header -->
+    <section class="quotes-header">
+        <div class="container">
 
-        <p class="text-muted">
-            Compare providers, review their prices, and book an appointment.
-        </p>
+            <p class="dashboard-label">FIXBAH SERVICES</p>
 
+            <h1>Provider Quotes</h1>
+
+            <p>
+                Compare service providers, review their prices,
+                and choose the right professional for your needs.
+            </p>
+
+        </div>
+    </section>
+
+
+    <!-- Main Content -->
+    <main class="container quotes-content">
+
+        <!-- Section Heading -->
+        <div class="quotes-section-heading">
+
+            <div>
+                <h2>Available Quotes</h2>
+
+                <p>
+                    Review the offers submitted by service providers.
+                </p>
+            </div>
+
+            {% if quotes %}
+                <span class="quotes-count">
+                    {{ quotes|length }}
+                    {% if quotes|length == 1 %}
+                        Quote
+                    {% else %}
+                        Quotes
+                    {% endif %}
+                </span>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Quotes -->
         {% if quotes %}
 
-            <div class="row">
+            <div class="row g-4">
 
                 {% for quote in quotes %}
 
-                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="col-12 col-md-6 col-lg-4">
 
-                        <div class="card shadow-sm h-100">
+                        <article class="quote-card">
 
-                            <div class="card-body">
+                            <!-- Provider Information -->
+                            <div class="quote-card-header">
 
-                                <!-- Provider name -->
-                                <h5 class="card-title">
-                                    {{ quote.business_name }}
-                                </h5>
+                                <div>
+                                    <span class="quote-label">
+                                        SERVICE PROVIDER
+                                    </span>
 
-                                <!-- Quote price -->
-                                <h4 class="text-primary mt-3">
-                                    BHD {{ "%.3f"|format(quote.price) }}
-                                </h4>
-
-                                <!-- Provider phone -->
-                                <p class="mb-2">
-                                    <strong>Phone:</strong>
-                                    {{ quote.phone }}
-                                </p>
-
-                                <!-- Provider information -->
-                                <p class="mb-2">
-                                    <strong>Provider Information:</strong><br>
-                                    {{ quote.business_description or "No additional information provided." }}
-                                </p>
-
-                                <!-- Quote details -->
-                                <p class="mb-2">
-                                    <strong>Quote Details:</strong><br>
-                                    {{ quote.quote_description or "No additional details provided." }}
-                                </p>
-
-                                <!-- Quote status -->
-                                <p class="mb-3">
-                                    <strong>Quote Status:</strong>
-
-                                    {% if quote.quote_status == 'accepted' %}
-
-                                        <span class="badge bg-success">
-                                            Accepted
-                                        </span>
-
-                                    {% elif quote.quote_status == 'rejected' %}
-
-                                        <span class="badge bg-secondary">
-                                            Not Selected
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="badge bg-warning text-dark">
-                                            Pending
-                                        </span>
-
-                                    {% endif %}
-                                </p>
-
-                                <!-- Book appointment button -->
-                                <a
-                                    href="{{ url_for('book_appointment', quote_id=quote.id) }}"
-                                    class="btn btn-success w-100"
-                                >
-                                    Book Appointment
-                                </a>
+                                    <h3>
+                                        {{ quote.business_name }}
+                                    </h3>
+                                </div>
 
                             </div>
 
-                        </div>
+
+                            <!-- Phone -->
+                            {% if quote.phone %}
+                                <div class="quote-phone">
+
+                                    <span class="quote-label">
+                                        PHONE
+                                    </span>
+
+                                    <p class="mb-0">
+                                        {{ quote.phone }}
+                                    </p>
+
+                                </div>
+                            {% endif %}
+
+
+                            <!-- Business Description -->
+                            {% if quote.business_description %}
+                                <div class="quote-provider-description">
+
+                                    <span class="quote-label">
+                                        ABOUT THE PROVIDER
+                                    </span>
+
+                                    <p class="mb-0">
+                                        {{ quote.business_description }}
+                                    </p>
+
+                                </div>
+                            {% endif %}
+
+
+                            <!-- Quote Description -->
+                            {% if quote.quote_description %}
+                                <div class="quote-description">
+
+                                    <span class="quote-label">
+                                        QUOTE DETAILS
+                                    </span>
+
+                                    <p class="mb-0">
+                                        {{ quote.quote_description }}
+                                    </p>
+
+                                </div>
+                            {% endif %}
+
+
+                            <!-- Price -->
+                            <div class="quote-price-section">
+
+                                <span class="quote-label">
+                                    QUOTED PRICE
+                                </span>
+
+                                <p class="quote-price">
+                                    BHD {{ "%.3f"|format(quote.price) }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- Status -->
+                            <div class="mb-3">
+
+                                <span class="quote-label">
+                                    QUOTE STATUS
+                                </span>
+
+                                {% if quote.quote_status == 'accepted' %}
+
+                                    <span class="quote-status quote-status-accepted">
+                                        Accepted
+                                    </span>
+
+                                {% elif quote.quote_status == 'rejected' %}
+
+                                    <span class="quote-status quote-status-rejected">
+                                        Rejected
+                                    </span>
+
+                                {% elif quote.quote_status == 'pending' %}
+
+                                    <span class="quote-status quote-status-pending">
+                                        Pending
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="quote-status quote-status-other">
+                                        {{ quote.quote_status|capitalize }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- Actions -->
+                            <div class="quotes-actions">
+
+                                {% if quote.quote_status == 'accepted' %}
+
+                                    <a
+                                        href="{{ url_for('book_appointment', quote_id=quote.id) }}"
+                                        class="btn btn-primary-brand w-100 py-2"
+                                    >
+                                        Book Appointment
+                                    </a>
+
+                                {% elif quote.quote_status == 'pending' %}
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary-brand w-100 py-2"
+                                        disabled
+                                    >
+                                        Waiting for Acceptance
+                                    </button>
+
+                                {% else %}
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-brand w-100 py-2"
+                                        disabled
+                                    >
+                                        Booking Unavailable
+                                    </button>
+
+                                {% endif %}
+
+                            </div>
+
+                        </article>
 
                     </div>
 
@@ -123,36 +251,65 @@
 
             </div>
 
+
         {% else %}
 
-            <!-- No quotes available -->
-            <div class="alert alert-info">
-                No providers have submitted quotes for this service request yet.
-            </div>
+            <!-- Empty State -->
+            <section class="quotes-empty">
+
+                <div class="quotes-empty-icon">
+                    &#128203;
+                </div>
+
+                <h3>No Quotes Available Yet</h3>
+
+                <p>
+                    No providers have submitted quotes for your service
+                    requests yet. Please check again later.
+                </p>
+
+                <div class="mt-4">
+
+                    <a
+                        href="{{ url_for('my_requests') }}"
+                        class="btn btn-primary-brand px-4 py-2"
+                    >
+                        View My Requests
+                    </a>
+
+                </div>
+
+            </section>
 
         {% endif %}
 
-        <!-- Navigation buttons -->
-        <div class="mt-3">
+
+        <!-- Navigation Buttons -->
+        <div class="d-flex flex-wrap gap-3 mt-5">
 
             <a
                 href="{{ url_for('my_requests') }}"
-                class="btn btn-secondary"
+                class="btn btn-outline-brand px-4 py-2"
             >
                 Back to My Requests
             </a>
 
             <a
                 href="{{ url_for('dashboard') }}"
-                class="btn btn-primary"
+                class="btn btn-secondary-brand px-4 py-2"
             >
-                Dashboard
+                Back to Dashboard
             </a>
 
         </div>
 
-    </div>
+    </main>
+
+
+    <!-- Bootstrap JavaScript -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 
 </body>
-
 </html>

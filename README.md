@@ -93,6 +93,23 @@ Customer selects a quotation
 ↓  
 Customer books an appointment
 
+## Database Relationships
+
+FixBah uses an SQLite database to manage customers, service providers, service requests, quotes, and bookings.
+
+The following diagram illustrates the database tables and their relationships.
+
+![FixBah Database Relationships](static/images/database-relationships.png)
+
+### Main Relationships
+
+- **Users and Providers:** A provider account is linked to a user account.
+- **Users and Service Requests:** Customers can create service requests.
+- **Categories and Service Requests:** Each service request belongs to a category.
+- **Service Requests and Quotes:** Providers can submit quotes for service requests.
+- **Providers and Quotes:** Each quote is submitted by a provider.
+- **Quotes and Bookings:** A booking is associated with a quote.
+
 ## Technologies Used
 
 - **Python** — Application logic.
@@ -208,19 +225,6 @@ To leave the virtual environment, run:
 ```bash
 deactivate
 ```
-
-## Database
-
-FixBah uses SQLite to store application data.
-
-The database supports the information required by the application,
-including user accounts, service requests, quotations, and bookings,
-according to the implemented database structure.
-
-The application must have access to its database when it runs.
-For a fresh installation, the database must be initialized using
-the project's database setup code if it does not already exist.
-
 ## Project Goal
 
 The goal of FixBah is to make home services easier to find and book

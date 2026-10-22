@@ -210,24 +210,24 @@
                             <!-- Actions -->
                             <div class="quotes-actions">
 
-                                {% if quote.quote_status == 'accepted' %}
+                                {% if quote.quote_status == 'pending' %}
 
-                                    <a
-                                        href="{{ url_for('book_appointment', quote_id=quote.id) }}"
-                                        class="btn btn-primary-brand w-100 py-2"
-                                    >
-                                        Book Appointment
-                                    </a>
+                                <a
+                                    href="{{ url_for('book_appointment', quote_id=quote.id) }}"
+                                    class="btn btn-primary-brand w-100 py-2"
+                                >
+                                    Book Appointment
+                                </a>
 
-                                {% elif quote.quote_status == 'pending' %}
+                            {% elif quote.quote_status == 'accepted' %}
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-secondary-brand w-100 py-2"
-                                        disabled
-                                    >
-                                        Waiting for Acceptance
-                                    </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary-brand w-100 py-2"
+                                    disabled
+                                >
+                                    Quote Accepted
+                                </button>
 
                                 {% else %}
 

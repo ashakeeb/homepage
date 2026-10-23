@@ -41,7 +41,7 @@ a {
 ===================================== */
 
 .navbar {
-    background: var(--white);
+    background-color: #12304A;
     padding: 16px 0;
     border-bottom: 1px solid var(--border);
 }
@@ -3526,4 +3526,58 @@ a {
     .quote-card-header {
         flex-direction: column;
     }
+}
+/* FixBah Logo */
+.fixbah-logo {
+    width: 150px;
+    height: 50px;
+    object-fit: contain;
+}
+/* Homepage navbar text */
+.navbar .navbar-nav .nav-link {
+    color: #ffffff;
+}
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link.active {
+    color: #18A7A1;
+}
+
+/* Login button */
+.navbar .btn-login {
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+.navbar .btn-login:hover {
+    background-color: #ffffff;
+    color: #12304A;
+}
+/* Force homepage navigation links to be visible */
+.navbar .navbar-nav .nav-link,
+.navbar .navbar-nav .nav-link.active,
+.navbar .navbar-nav .nav-link:focus {
+    color: #ffffff !important;
+}
+
+.navbar .navbar-nav .nav-link:hover {
+    color: #18A7A1 !important;
+}
+
+/* Make Login match Get Started */
+.navbar .btn-login {
+    background-color: #18A7A1;
+    color: #ffffff;
+    border: 1px solid #18A7A1;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+.navbar .btn-login:hover {
+    background-color: #138B86;
+    color: #ffffff;
+    border-color: #138B86;
 }

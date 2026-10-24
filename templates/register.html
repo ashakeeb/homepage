@@ -19,25 +19,28 @@
 
 <body class="auth-page">
 
-    <nav class="navbar navbar-dark">
+   <nav class="navbar navbar-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
-                Fix<span class="brand-highlight">Bah</span>
+
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img
+                    src="{{ url_for('static', filename='images/fixbah-logo.png') }}"
+                    alt="FixBah logo"
+                    class="fixbah-logo"
+                >
             </a>
 
-            <a href="{{ url_for('login') }}"
-               class="btn btn-outline-light btn-sm">
+            <a href="{{ url_for('login') }}" class="btn btn-primary-brand">
                 Login
             </a>
+
         </div>
     </nav>
 
     <main class="auth-container">
 
         <div class="auth-card">
-
-            <div class="auth-logo">FixBah</div>
-
+            
             <h1 class="auth-title">Create Your Account</h1>
 
             <p class="auth-subtitle">

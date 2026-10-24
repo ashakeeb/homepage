@@ -24,8 +24,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark dashboard-navbar">
         <div class="container">
 
-            <a class="navbar-brand fw-bold" href="/">
-                Fix<span class="brand-highlight">Bah</span>
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img
+                    src="{{ url_for('static', filename='images/fixbah-logo.png') }}"
+                    alt="FixBah logo"
+                    class="fixbah-logo"
+                >
             </a>
 
             <div class="d-flex align-items-center gap-3">
@@ -34,7 +38,7 @@
                 </span>
 
                 <a href="{{ url_for('logout') }}"
-                   class="btn btn-outline-light btn-sm">
+                   class="btn btn-primary-brand">
                     Logout
                 </a>
             </div>

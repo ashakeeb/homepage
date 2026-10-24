@@ -20,14 +20,18 @@
 <body class="booking-page">
 
     <!-- Navigation -->
-    <nav class="booking-navbar">
-        <div class="container d-flex justify-content-between align-items-center">
+    <nav class="navbar navbar-dark">
+        <div class="container">
 
-            <a class="booking-brand" href="/">
-                Fix<span class="brand-highlight">Bah</span>
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img
+                    src="{{ url_for('static', filename='images/fixbah-logo.png') }}"
+                    alt="FixBah logo"
+                    class="fixbah-logo"
+                >
             </a>
 
-            <a href="{{ url_for('logout') }}" class="booking-logout-btn">
+            <a href="{{ url_for('logout') }}" class="btn btn-primary-brand">
                 Logout
             </a>
 

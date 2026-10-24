@@ -420,6 +420,7 @@ def provider_requests():
             categories.name AS category_name,
             service_requests.description,
             service_requests.location,
+            service_requests.customer_phone,
             service_requests.status,
             service_requests.created_at
         FROM service_requests
@@ -457,8 +458,9 @@ def request_service():
         category_id = request.form.get("category_id", "").strip()
         description = request.form.get("description", "").strip()
         location = request.form.get("location", "").strip()
+        customer_phone = request.form.get("customer_phone", "").strip()
 
-        if not category_id or not description or not location:
+        if not category_id or not description or not location or not customer_phone:
             db.close()
             return render_template(
                 "request_service.html",
@@ -497,13 +499,14 @@ def request_service():
 
         db.execute("""
             INSERT INTO service_requests
-                (customer_id, category_id, description, location, status)
-            VALUES (?, ?, ?, ?, 'pending')
+                (customer_id, category_id, description, location, customer_phone, status)
+            VALUES (?, ?, ?, ?, ?, 'pending')
         """, (
             session["user_id"],
             category_id,
             description,
-            location
+            location,
+            customer_phone
         ))
 
         db.commit()

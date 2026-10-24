@@ -20,15 +20,19 @@
 <body class="request-service-page">
 
     <!-- Navigation -->
-    <nav class="request-navbar">
-        <div class="container d-flex justify-content-between align-items-center">
+    <nav class="navbar navbar-dark dashboard-navbar">
+        <div class="container">
 
-            <a class="request-brand" href="/">
-                Fix<span class="brand-highlight">Bah</span>
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img
+                    src="{{ url_for('static', filename='images/fixbah-logo.png') }}"
+                    alt="FixBah logo"
+                    class="fixbah-logo"
+                >
             </a>
 
             <a href="{{ url_for('dashboard') }}"
-               class="request-dashboard-btn">
+               class="btn btn-primary-brand">
                 Dashboard
             </a>
 
@@ -126,6 +130,27 @@
                     </div>
                 </div>
 
+                <!-- Customer Phone Number -->
+                <div class="mb-4">
+                    <label for="customer_phone" class="form-label">
+                        Customer Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        class="form-control"
+                        id="customer_phone"
+                        name="customer_phone"
+                        maxlength="20"
+                        placeholder="e.g. 3XXXXXXX"
+                        autocomplete="tel"
+                        required
+                    >
+
+                    <div class="form-text">
+                        Enter a phone number that service providers can use to contact you.
+                    </div>
+                </div>
 
                 <!-- Location -->
                 <div class="mb-4">

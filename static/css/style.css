@@ -1265,9 +1265,17 @@ a {
 }
 
 .jobs-header {
-    background: #FFFFFF;
-    padding: 45px 0;
-    border-bottom: 1px solid #E9EEF2;
+    background: linear-gradient(135deg, #12304A, #1B4965);
+    color: #FFFFFF;
+    padding: 55px 0 65px;
+}
+
+.jobs-header h1,
+.jobs-header p {
+    color: #FFFFFF !important;
+}
+.jobs-header .dashboard-label {
+    color: #18A7A1 !important;
 }
 
 .jobs-header h1 {

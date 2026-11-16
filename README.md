@@ -5,7 +5,7 @@
 **Author:** Ali Shakeeb  
 **Course:** CS50x — Introduction to Computer Science 
 **Year:** 2026
-#### Video Demo:  <URL HERE>
+#### Video Demo:  https://youtu.be/kwCf5iHMP68
 
 ## About the Project
 

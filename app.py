@@ -1,5 +1,5 @@
 import sqlite3
-import re
+import re #Regular Expressions search, find, and manipulate text using patterns.
 from datetime import datetime
 from flask import (
     Flask, render_template, request,

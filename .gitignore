@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+fixbh_backup_*.db
+fixbh_empty_backup.db
+fixbh_recovered.db

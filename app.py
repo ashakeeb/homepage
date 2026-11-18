@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import re #Regular Expressions search, find, and manipulate text using patterns.
 from datetime import datetime
@@ -17,7 +18,7 @@ from database import (
 app = Flask(__name__)
 
 # Replace this with a long random secret before deployment.
-app.secret_key = "replace-this-with-a-long-random-secret"
+app.secret_key = os.environ.get("SECRET_KEY")
 
 create_table()
 
@@ -865,4 +866,4 @@ def book_appointment(quote_id):
     )
     
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
